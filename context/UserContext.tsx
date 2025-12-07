@@ -1,38 +1,25 @@
 import { createContext, useState, ReactNode } from 'react';
 
-interface CartItem {
+export interface User {
   id: number;
   name: string;
-  price: number;
-  image: string;
-  quantity: number;
+  email: string;
 }
 
-interface CartContextType {
-  cart: CartItem[];
-  addToCart: (item: CartItem) => void;
-  removeFromCart: (id: number) => void;
-  clearCart: () => void;
+export interface UserContextType {
+  user: User | null;
+  setUser: (user: User) => void;
 }
 
-export const CartContext = createContext<CartContextType | undefined>(undefined);
+// ✅ Export UserContext
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  const addToCart = (item: CartItem) => {
-    setCart(prev => [...prev, item]);
-  };
-
-  const removeFromCart = (id: number) => {
-    setCart(prev => prev.filter(item => item.id !== id));
-  };
-
-  const clearCart = () => setCart([]);
+export const UserProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <UserContext.Provider value={{ user, setUser }}>
       {children}
-    </CartContext.Provider>
+    </UserContext.Provider>
   );
 };

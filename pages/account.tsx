@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../hooks/useUser';
 
 export default function Account() {
   const { user } = useUser();

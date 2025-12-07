@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart'; // Correct import
 
 export default function CartItem({ item }: any) {
   const { removeFromCart } = useCart();

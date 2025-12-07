@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart';
 import CartItem from '../components/CartItem';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';

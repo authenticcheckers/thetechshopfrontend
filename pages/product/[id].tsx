@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { getProductById } from '../../utils/api';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../hooks/useCart';
 
 export default function ProductPage() {
   const router = useRouter();

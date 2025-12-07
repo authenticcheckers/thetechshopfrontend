@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart';
 
 export default function Navbar() {
   const { cart } = useCart();

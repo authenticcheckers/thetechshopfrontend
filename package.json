@@ -15,7 +15,8 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
     "react-dropzone": "^14.2.3",
-    "pg": "^8.11.5"
+    "pg": "^8.11.5",
+    "cloudinary": "^1.41.3"
   },
   "devDependencies": {
     "typescript": "^5.2.2",

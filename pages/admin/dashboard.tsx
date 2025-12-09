@@ -1,108 +1,119 @@
-import { useEffect, useState } from "react";
+// pages/admin/dashboard.tsx
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useDropzone } from "react-dropzone";
 
 interface Product {
   id: number;
   name: string;
   description: string;
   price: number;
-  image_url: string;
   stock: number;
+  image_url: string;
+}
+
+interface Order {
+  id: number;
+  customer_name: string;
+  total_price: number;
+  status: string;
+  created_at: string;
 }
 
 export default function AdminDashboard() {
+  // States
   const [products, setProducts] = useState<Product[]>([]);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [form, setForm] = useState({ name: "", description: "", price: "", stock: "" });
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [form, setForm] = useState({
+    id: null as number | null,
+    name: "",
+    description: "",
+    price: "",
+    stock: "",
+    imageFile: null as File | null,
+  });
   const [uploading, setUploading] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
-  // Fetch all products
+  // Fetch products
   const fetchProducts = async () => {
-    const res = await axios.get("/api/products/list");
-    setProducts(res.data.products);
+    try {
+      setLoadingProducts(true);
+      const res = await axios.get("/api/products/list");
+      setProducts(res.data.products);
+      setLoadingProducts(false);
+    } catch (err) {
+      console.error("Fetch products failed:", err);
+      setLoadingProducts(false);
+    }
   };
 
-  useEffect(() => { fetchProducts(); }, []);
-
-  // Dropzone for image
-  const onDrop = (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    setImage(file);
-    setPreview(URL.createObjectURL(file));
-  };
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { 'image/*': [] }, maxFiles: 1 });
-
-  // Handle form change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // Fetch orders
+  const fetchOrders = async () => {
+    try {
+      setLoadingOrders(true);
+      const res = await axios.get("/api/orders/list");
+      setOrders(res.data.orders);
+      setLoadingOrders(false);
+    } catch (err) {
+      console.error("Fetch orders failed:", err);
+      setLoadingOrders(false);
+    }
   };
 
-  // Start editing
-  const startEdit = (product: Product) => {
-    setEditingProduct(product);
-    setForm({
-      name: product.name,
-      description: product.description,
-      price: product.price.toString(),
-      stock: product.stock.toString(),
-    });
-    setPreview(product.image_url);
-    setImage(null);
-  };
-
-  // Cancel editing
-  const cancelEdit = () => {
-    setEditingProduct(null);
-    setForm({ name: "", description: "", price: "", stock: "" });
-    setImage(null);
-    setPreview(null);
-  };
-
-  // Delete product
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
-    await axios.delete("/api/products/delete", { data: { id } });
+  useEffect(() => {
     fetchProducts();
+    fetchOrders();
+  }, []);
+
+  // Handle file change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setForm({ ...form, imageFile: e.target.files[0] });
+    }
   };
 
-  // Submit form (Add or Update)
+  // Upload image to Cloudinary
+  const uploadImage = async (): Promise<string> => {
+    if (!form.imageFile) throw new Error("No image selected");
+    setUploading(true);
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      reader.readAsDataURL(form.imageFile as File);
+      reader.onloadend = async () => {
+        try {
+          const res = await axios.post("/api/upload-image", { image: reader.result });
+          setUploading(false);
+          resolve(res.data.url);
+        } catch (err) {
+          setUploading(false);
+          reject(err);
+        }
+      };
+    });
+  };
+
+  // Add or Edit Product
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.price) return alert("Name and price are required");
-
-    setUploading(true);
-    let imageUrl = preview; // default to existing preview
-
-    // Upload image if a new one is selected
-    if (image) {
-      const reader = new FileReader();
-      reader.readAsDataURL(image);
-      await new Promise<void>((resolve) => {
-        reader.onloadend = async () => {
-          const imgRes = await axios.post("/api/upload-image", { image: reader.result });
-          imageUrl = imgRes.data.url;
-          resolve();
-        };
-      });
+    if (!form.name || !form.price || !form.stock || !form.imageFile) {
+      alert("Please fill all fields and select an image.");
+      return;
     }
-
     try {
-      if (editingProduct) {
-        // Update existing product
+      const imageUrl = await uploadImage();
+      if (form.id) {
+        // Update product
         await axios.put("/api/products/update", {
-          id: editingProduct.id,
+          id: form.id,
           name: form.name,
           description: form.description,
           price: parseFloat(form.price),
           stock: parseInt(form.stock),
           image_url: imageUrl,
         });
-        alert("Product updated successfully!");
       } else {
-        // Add new product
+        // Add product
         await axios.post("/api/products/add", {
           name: form.name,
           description: form.description,
@@ -110,16 +121,37 @@ export default function AdminDashboard() {
           stock: parseInt(form.stock),
           image_url: imageUrl,
         });
-        alert("Product added successfully!");
       }
-      cancelEdit();
+      setForm({ id: null, name: "", description: "", price: "", stock: "", imageFile: null });
       fetchProducts();
     } catch (err) {
-      console.error(err);
-      alert("Operation failed");
-    } finally {
-      setUploading(false);
+      console.error("Submit product failed:", err);
+      alert("Failed to add/update product. Check console for details.");
     }
+  };
+
+  // Delete Product
+  const handleDelete = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+    try {
+      await axios.delete("/api/products/delete", { data: { id } });
+      fetchProducts();
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Failed to delete product.");
+    }
+  };
+
+  // Edit Product
+  const handleEdit = (product: Product) => {
+    setForm({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price.toString(),
+      stock: product.stock.toString(),
+      imageFile: null,
+    });
   };
 
   return (
@@ -127,43 +159,63 @@ export default function AdminDashboard() {
       <h1 className="text-4xl font-bold mb-6">Admin Dashboard</h1>
 
       {/* Product Form */}
-      <div className="bg-gray-800 p-6 rounded shadow-lg mb-8">
-        <h2 className="text-2xl font-semibold mb-4">{editingProduct ? "Edit Product" : "Add New Product"}</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input name="name" placeholder="Name" value={form.name} onChange={handleChange} className="border p-2 w-full rounded"/>
-          <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} className="border p-2 w-full rounded"/>
-          <input name="price" placeholder="Price" value={form.price} onChange={handleChange} className="border p-2 w-full rounded"/>
-          <input name="stock" placeholder="Stock" value={form.stock} onChange={handleChange} className="border p-2 w-full rounded"/>
-          
-          <div {...getRootProps()} className="border-2 border-dashed border-gray-500 p-4 rounded cursor-pointer text-center hover:border-blue-500 transition">
-            <input {...getInputProps()} />
-            {preview ? <img src={preview} className="mx-auto h-40 object-contain" /> : <p>Drag & drop images here, or click to select</p>}
-          </div>
+      <form onSubmit={handleSubmit} className="bg-gray-800 p-6 rounded mb-8 flex flex-col space-y-4">
+        <input type="text" placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="p-2 rounded bg-gray-700"/>
+        <input type="text" placeholder="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="p-2 rounded bg-gray-700"/>
+        <input type="number" placeholder="Price" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} className="p-2 rounded bg-gray-700"/>
+        <input type="number" placeholder="Stock" value={form.stock} onChange={e => setForm({ ...form, stock: e.target.value })} className="p-2 rounded bg-gray-700"/>
+        <input type="file" accept="image/*" onChange={handleFileChange} className="p-2 rounded bg-gray-700"/>
+        <button type="submit" disabled={uploading} className="bg-blue-600 p-2 rounded hover:bg-blue-700">
+          {uploading ? "Uploading..." : form.id ? "Update Product" : "Add Product"}
+        </button>
+      </form>
 
-          <div className="flex space-x-2">
-            <button type="submit" disabled={uploading} className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded">
-              {uploading ? "Uploading..." : editingProduct ? "Update Product" : "Add Product"}
-            </button>
-            {editingProduct && <button type="button" onClick={cancelEdit} className="bg-gray-500 hover:bg-gray-400 px-4 py-2 rounded">Cancel</button>}
-          </div>
-        </form>
-      </div>
-
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Products List */}
+      <h2 className="text-2xl font-semibold mb-4">Products</h2>
+      {loadingProducts ? <p>Loading products...</p> :
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {products.map(p => (
-          <div key={p.id} className="bg-gray-800 p-4 rounded shadow hover:scale-105 transition-transform">
+          <div key={p.id} className="bg-gray-800 p-4 rounded shadow relative">
             <img src={p.image_url} alt={p.name} className="w-full h-48 object-cover rounded mb-2"/>
-            <h2 className="text-xl font-semibold">{p.name}</h2>
+            <h3 className="text-xl font-semibold">{p.name}</h3>
             <p className="text-gray-300">{p.description}</p>
             <p className="mt-2 font-bold">${p.price}</p>
             <p>Stock: {p.stock}</p>
-            <div className="flex justify-between mt-4">
-              <button onClick={() => startEdit(p)} className="bg-yellow-500 hover:bg-yellow-400 px-2 py-1 rounded">Edit</button>
-              <button onClick={() => handleDelete(p.id)} className="bg-red-600 hover:bg-red-500 px-2 py-1 rounded">Delete</button>
+            <div className="flex mt-2 space-x-2">
+              <button onClick={() => handleEdit(p)} className="bg-yellow-600 px-2 rounded hover:bg-yellow-700">Edit</button>
+              <button onClick={() => handleDelete(p.id)} className="bg-red-600 px-2 rounded hover:bg-red-700">Delete</button>
             </div>
           </div>
         ))}
+      </div>}
+
+      {/* Orders List */}
+      <h2 className="text-2xl font-semibold mb-4">Orders</h2>
+      {loadingOrders ? <p>Loading orders...</p> :
+      <div className="bg-gray-800 p-4 rounded">
+        {orders.length === 0 ? <p>No orders yet.</p> :
+        <table className="w-full text-white table-auto">
+          <thead>
+            <tr>
+              <th className="p-2 border">ID</th>
+              <th className="p-2 border">Customer</th>
+              <th className="p-2 border">Total</th>
+              <th className="p-2 border">Status</th>
+              <th className="p-2 border">Created At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map(o => (
+              <tr key={o.id} className="border-t">
+                <td className="p-2 border">{o.id}</td>
+                <td className="p-2 border">{o.customer_name}</td>
+                <td className="p-2 border">${o.total_price}</td>
+                <td className="p-2 border">{o.status}</td>
+                <td className="p-2 border">{new Date(o.created_at).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>}
       </div>
     </div>
   );

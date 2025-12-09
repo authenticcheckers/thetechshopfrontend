@@ -75,68 +75,28 @@ export default function AdminDashboard() {
     }
   };
 
-  // Upload image
+  // Upload image and return uploaded URL
   const uploadImage = async (): Promise<string> => {
     if (!form.imageFile) throw new Error("No image selected");
 
     setUploading(true);
+    const formData = new FormData();
+    formData.append("image", form.imageFile);
 
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onloadend = async () => {
-        try {
-          const res = await axios.post("/api/upload-image", {
-            image: reader.result,
-          });
-          resolve(res.data.url);
-        } catch (err) {
-          reject(err);
-        } finally {
-          setUploading(false);
-        }
-      };
-
-     const handleImageUpload = () => {
-  if (!form.imageFile) {
-    console.log("No file selected");
-    return; // Exit if no file
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    // Do something with reader.result
-    console.log(reader.result);
+    try {
+      const res = await axios.post("/api/products/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return res.data.url;
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      throw err;
+    } finally {
+      setUploading(false);
+    }
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!form.imageFile) {
-    console.log("No file selected");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("image", form.imageFile); // file
-  formData.append("name", form.name); // other fields if needed
-  formData.append("price", form.price.toString());
-
-  try {
-    const res = await fetch("/api/products/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!res.ok) throw new Error("Upload failed");
-
-    const result = await res.json();
-    console.log("Upload success:", result);
-  } catch (err) {
-    console.error(err);
-  }
-};
-     };
 
   // Add / Edit Product
   const handleSubmit = async (e: React.FormEvent) => {

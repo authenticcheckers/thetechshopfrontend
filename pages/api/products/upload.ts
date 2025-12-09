@@ -4,9 +4,7 @@ import formidable from "formidable";
 import cloudinary from "../../../utils/cloudinary";
 
 export const config = {
-  api: {
-    bodyParser: false, // required for file uploads
-  },
+  api: { bodyParser: false }, // required for file uploads
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -19,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   form.parse(req, async (err, fields, files: any) => {
     if (err) {
       console.error("Form parse error:", err);
-      return res.status(500).json({ error: "Form parse failed" });
+      return res.status(500).json({ error: "Form parse failed", details: err });
     }
 
     if (!files.image) {
@@ -28,14 +26,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       const file = Array.isArray(files.image) ? files.image[0] : files.image;
+
+      // Cloudinary upload
       const result = await cloudinary.uploader.upload(file.filepath, {
-        folder: "thetechshop", // optional folder in Cloudinary
+        folder: "thetechshop",
+        use_filename: true,
+        unique_filename: true,
       });
 
       return res.status(200).json({ url: result.secure_url });
     } catch (uploadErr) {
       console.error("Cloudinary upload failed:", uploadErr);
-      return res.status(500).json({ error: "Upload failed" });
+      return res.status(500).json({ error: "Cloudinary upload failed", details: uploadErr });
     }
   });
 }

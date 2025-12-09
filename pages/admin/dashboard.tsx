@@ -97,7 +97,21 @@ export default function AdminDashboard() {
         }
       };
 
-      reader.readAsDataURL(form.imageFile);
+     const handleImageUpload = () => {
+  if (!form.imageFile) {
+    console.log("No file selected");
+    return; // Exit if no file
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    // Do something with reader.result
+    console.log(reader.result);
+  };
+
+  reader.readAsDataURL(form.imageFile);
+};
+
     });
   };
 

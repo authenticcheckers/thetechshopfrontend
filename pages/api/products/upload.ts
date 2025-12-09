@@ -1,7 +1,7 @@
 // pages/api/products/upload.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
-import cloudinary from "../../utils/cloudinary";
+import cloudinary from "../../../utils/cloudinary";
 
 export const config = {
   api: {

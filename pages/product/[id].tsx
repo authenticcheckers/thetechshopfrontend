@@ -1,6 +1,5 @@
 // pages/api/products/[id].ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Pool } from "pg";
 
 // Use global pool
 declare global {

@@ -187,44 +187,43 @@ export default function AdminDashboard() {
             </div>
           </div>
         ))}
-      </div>}
+      </div>
+      }
 
       {/* Orders List */}
-<h2 className="text-2xl font-semibold mb-4">Orders</h2>
-{loadingOrders ? (
-  <p>Loading orders...</p>
-) : (
-  <div className="bg-gray-800 p-4 rounded">
-    {orders.length === 0 ? (
-      <p>No orders yet.</p>
-    ) : (
-      <table className="w-full text-white table-auto">
-        <thead>
-          <tr>
-            <th className="p-2 border">ID</th>
-            <th className="p-2 border">Customer</th>
-            <th className="p-2 border">Total</th>
-            <th className="p-2 border">Status</th>
-            <th className="p-2 border">Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((o) => (
-            <tr key={o.id} className="border-t">
-              <td className="p-2 border">{o.id}</td>
-              <td className="p-2 border">{o.customer_name}</td>
-              <td className="p-2 border">${o.total_price}</td>
-              <td className="p-2 border">{o.status}</td>
-              <td className="p-2 border">{new Date(o.created_at).toLocaleString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )}
-  </div>
-)}
-
-      </div>
-  </div>
+      <h2 className="text-2xl font-semibold mb-4">Orders</h2>
+      {loadingOrders ? (
+        <p>Loading orders...</p>
+      ) : (
+        <div className="bg-gray-800 p-4 rounded">
+          {orders.length === 0 ? (
+            <p>No orders yet.</p>
+          ) : (
+            <table className="w-full text-white table-auto">
+              <thead>
+                <tr>
+                  <th className="p-2 border">ID</th>
+                  <th className="p-2 border">Customer</th>
+                  <th className="p-2 border">Total</th>
+                  <th className="p-2 border">Status</th>
+                  <th className="p-2 border">Created At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map(o => (
+                  <tr key={o.id} className="border-t">
+                    <td className="p-2 border">{o.id}</td>
+                    <td className="p-2 border">{o.customer_name}</td>
+                    <td className="p-2 border">${o.total_price}</td>
+                    <td className="p-2 border">{o.status}</td>
+                    <td className="p-2 border">{new Date(o.created_at).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

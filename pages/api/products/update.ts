@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
 import cloudinary from "../../../utils/cloudinary";
-import axios from "axios"; // if needed for other requests
 
 export const config = { api: { bodyParser: false } };
 
@@ -32,29 +31,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (files?.image) {
         const file = Array.isArray(files.image) ? files.image[0] : files.image;
-
         const result = await cloudinary.uploader.upload(file.filepath, {
           folder: "thetechshop",
           use_filename: true,
           unique_filename: true,
         });
-
         imageUrl = result.secure_url;
       }
 
-      // Update product in your database (replace with your DB logic)
-      // Example using axios to your backend API
-      await axios.put(`${process.env.BACKEND_URL}/products/update`, {
-        id: Number(id),
-        name,
-        description,
-        specs,
-        price: Number(price),
-        stock: Number(stock),
+      // TODO: Replace this with your DB update logic
+      // Example using Prisma, Supabase, or your backend API
+      // await db.product.update({ ... });
+
+      return res.status(200).json({
+        message: "Product updated successfully",
         ...(imageUrl && { image_url: imageUrl }),
       });
-
-      return res.status(200).json({ message: "Product updated successfully" });
     } catch (uploadErr: unknown) {
       console.error("Product update failed:", uploadErr);
       return res.status(500).json({

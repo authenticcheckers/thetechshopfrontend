@@ -23,13 +23,17 @@ export default function ProductPage() {
     <div className="bg-neutral-900 min-h-screen text-white">
       <Navbar />
       <div className="p-10 flex flex-col md:flex-row gap-10">
-        <img src={product.image} className="w-full md:w-1/2 h-96 object-cover rounded-xl" />
+        <img
+          src={product.image_url || "/placeholder.jpg"}
+          className="w-full md:w-1/2 h-96 object-cover rounded-xl"
+          alt={product.name}
+        />
         <div className="flex-1">
           <h1 className="text-4xl font-bold mb-3">{product.name}</h1>
           <p className="text-neutral-400 mb-3">{product.description}</p>
-          <p className="text-lg font-semibold mb-3">{product.price} GHS</p>
+          <p className="text-lg font-semibold mb-3">{Number(product.price).toLocaleString()} GHS</p>
           <h2 className="text-xl font-bold mb-2">Specs:</h2>
-          <p className="text-neutral-300 mb-5">{product.specs}</p>
+          <p className="text-neutral-300 mb-5">{product.specs || "Specs not available"}</p>
           <button
             onClick={() => addToCart(product)}
             className="bg-primary text-black py-2 px-5 rounded-lg hover:bg-cyan-400 transition"

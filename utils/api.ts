@@ -11,3 +11,9 @@ export const getProductById = async (id: string) => {
   const res = await axios.get(`${API_URL}/api/products/${id}`);
   return res.data.product;
 };
+
+// ✅ Add this
+export const createOrder = async (orderData: any) => {
+  const res = await axios.post(`${API_URL}/api/orders`, orderData);
+  return res.data;
+};

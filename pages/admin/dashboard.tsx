@@ -78,7 +78,7 @@ export default function AdminDashboard() {
 };
 
     try {
-      const res = await fetch("/api/products/upload", { method: "POST", body: formData });
+      const res = await fetch("/api/products/upload", { method: "POST", body: FormData });
 
       let data;
       try {

@@ -40,8 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // TODO: Replace this with your DB update logic
-      // Example using Prisma, Supabase, or your backend API
-      // await db.product.update({ ... });
+      // Example: await db.product.update({ ... })
 
       return res.status(200).json({
         message: "Product updated successfully",

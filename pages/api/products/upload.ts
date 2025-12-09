@@ -1,8 +1,11 @@
+// pages/api/products/upload.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
 import cloudinary from "../../../utils/cloudinary";
 
-export const config = { api: { bodyParser: false } };
+export const config = {
+  api: { bodyParser: false },
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -14,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   form.parse(req, async (err, fields, files: any) => {
     if (err) {
       console.error("Form parse error:", err);
-      return res.status(500).json({ error: "Form parse failed", details: err instanceof Error ? err.message : String(err) });
+      return res.status(500).json({ error: "Form parse failed", details: err.toString() });
     }
 
     if (!files.image) {
@@ -23,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       const file = Array.isArray(files.image) ? files.image[0] : files.image;
+
       const result = await cloudinary.uploader.upload(file.filepath, {
         folder: "thetechshop",
         use_filename: true,
@@ -30,12 +34,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       return res.status(200).json({ url: result.secure_url });
-    } catch (uploadErr: unknown) {
+    } catch (uploadErr) {
       console.error("Cloudinary upload failed:", uploadErr);
-      return res.status(500).json({
-        error: "Cloudinary upload failed",
-        details: uploadErr instanceof Error ? uploadErr.message : String(uploadErr),
-      });
+      return res.status(500).json({ error: "Cloudinary upload failed", details: uploadErr.toString() });
     }
   });
 }

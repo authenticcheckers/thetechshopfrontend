@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!image) return res.status(400).json({ message: 'No image provided' });
 
   try {
-    const uploaded = await cloudinary.v2.uploader.upload(image, { folder: 'tech-shop-products' });
+    const uploaded = await cloudinary.uploader.upload(image, { folder: 'tech-shop-products' });
     res.status(200).json({ url: uploaded.secure_url });
   } catch (err) {
     res.status(500).json({ message: 'Image upload failed', error: err });

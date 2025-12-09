@@ -53,13 +53,17 @@ export default function AdminDashboard() {
 
     try {
       const res = await fetch("/api/products/upload", { method: "POST", body: formData });
+
       let data;
       try {
-        data = await res.json();
+        data = await res.json(); // Only read once
       } catch {
-        throw new Error(`Server returned invalid JSON: ${await res.text()}`);
+        const text = await res.text();
+        throw new Error(`Server returned invalid JSON: ${text}`);
       }
+
       if (!res.ok) throw new Error(data?.error || "Upload failed");
+
       return data.url;
     } finally {
       setUploading(false);
@@ -68,6 +72,7 @@ export default function AdminDashboard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!form.name || !form.price || !form.stock || !form.imageFile) {
       alert("Fill all fields and select an image");
       return;

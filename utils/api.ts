@@ -17,3 +17,8 @@ export const createOrder = async (orderData: any) => {
   return res.data;
 };
 
+export const getProducts = async () => {
+  // TEMP: local products so UI works instantly
+  const res = await fetch('/dev-products.json');
+  return res.json();
+};

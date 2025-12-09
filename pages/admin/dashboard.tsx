@@ -44,8 +44,10 @@ export default function AdminDashboard() {
     }
   };
 
-  const uploadImage = async (): Promise<string> => {
-  if (!form.imageFile) throw new Error("No image selected");
+ const uploadImage = async (): Promise<string> => {
+  if (!form.imageFile) {
+    throw new Error("No image selected"); // ✅ must use throw inside braces
+  }
 
   setUploading(true);
   const formData = new FormData();
@@ -57,7 +59,7 @@ export default function AdminDashboard() {
       body: formData,
     });
 
-    // Only read body once
+    // Read body exactly once to avoid 'body stream already read'
     const text = await res.text();
 
     let data;
@@ -74,11 +76,6 @@ export default function AdminDashboard() {
     setUploading(false);
   }
 };
-"No image selected");
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("image", form.imageFile);
 
     try {
       const res = await fetch("/api/products/upload", { method: "POST", body: formData });

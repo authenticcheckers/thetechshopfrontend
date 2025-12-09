@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
-import cloudinary from "../../utils/cloudinary"; // adjust path if needed
+import cloudinary from "../../utils/cloudinary.ts"; // adjust path if needed
 
 export const config = {
   api: {

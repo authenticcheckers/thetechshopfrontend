@@ -45,7 +45,36 @@ export default function AdminDashboard() {
   };
 
   const uploadImage = async (): Promise<string> => {
-    if (!form.imageFile) throw new Error("No image selected");
+  if (!form.imageFile) throw new Error("No image selected");
+
+  setUploading(true);
+  const formData = new FormData();
+  formData.append("image", form.imageFile);
+
+  try {
+    const res = await fetch("/api/products/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    // Only read body once
+    const text = await res.text();
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(`Server returned invalid JSON: ${text}`);
+    }
+
+    if (!res.ok) throw new Error(data?.error || "Upload failed");
+
+    return data.url;
+  } finally {
+    setUploading(false);
+  }
+};
+"No image selected");
 
     setUploading(true);
     const formData = new FormData();

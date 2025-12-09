@@ -16,3 +16,9 @@ export const createOrder = async (orderData: any) => {
   const res = await axios.post(`${API_URL}/api/orders`, orderData);
   return res.data;
 };
+
+export const getProducts = async () => {
+  // TEMP: local products so UI works instantly
+  const res = await fetch('/dev-products.json');
+  return res.json();
+};

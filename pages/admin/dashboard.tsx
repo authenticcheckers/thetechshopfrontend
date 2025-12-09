@@ -1,4 +1,3 @@
-// pages/admin/dashboard.tsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -37,7 +36,11 @@ export default function AdminDashboard() {
     imageFile: null as File | null,
   });
 
-  // Fetch products
+  useEffect(() => {
+    fetchProducts();
+    fetchOrders();
+  }, []);
+
   const fetchProducts = async () => {
     try {
       setLoadingProducts(true);
@@ -50,7 +53,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Fetch orders
   const fetchOrders = async () => {
     try {
       setLoadingOrders(true);
@@ -63,19 +65,12 @@ export default function AdminDashboard() {
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-    fetchOrders();
-  }, []);
-
-  // Handle file input change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       setForm({ ...form, imageFile: e.target.files[0] });
     }
   };
 
-  // Upload image to Cloudinary via API route
   const uploadImage = async (): Promise<string> => {
     if (!form.imageFile) throw new Error("No image selected");
 
@@ -84,24 +79,24 @@ export default function AdminDashboard() {
     formData.append("image", form.imageFile);
 
     try {
-      const res = await fetch("/api/products/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData?.error || "Upload failed");
+      const res = await fetch("/api/products/upload", { method: "POST", body: formData });
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(`Server returned invalid JSON: ${await res.text()}`);
       }
 
-      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Upload failed");
+      }
+
       return data.url;
     } finally {
       setUploading(false);
     }
   };
 
-  // Handle Add / Edit Product
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -134,21 +129,11 @@ export default function AdminDashboard() {
         });
       }
 
-      // Reset form
-      setForm({
-        id: null,
-        name: "",
-        description: "",
-        specs: "",
-        price: "",
-        stock: "",
-        imageFile: null,
-      });
-
+      setForm({ id: null, name: "", description: "", specs: "", price: "", stock: "", imageFile: null });
       fetchProducts();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Submit failed:", err);
-      alert(`Product save failed: ${err.message}`);
+      alert(`Product save failed: ${err instanceof Error ? err.message : String(err)}`);
     }
   };
 
@@ -174,10 +159,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <h1 className="text-4xl font-bold mb-6">Admin Dashboard</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-gray-800 p-6 rounded mb-8 space-y-4"
-      >
+      <form onSubmit={handleSubmit} className="bg-gray-800 p-6 rounded mb-8 space-y-4">
         <input
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -218,19 +200,10 @@ export default function AdminDashboard() {
 
         <input type="file" accept="image/*" onChange={handleFileChange} />
 
-        <button
-          disabled={uploading}
-          className="bg-blue-600 p-2 rounded w-full"
-        >
-          {uploading
-            ? "Uploading..."
-            : form.id
-            ? "Update Product"
-            : "Add Product"}
+        <button disabled={uploading} className="bg-blue-600 p-2 rounded w-full">
+          {uploading ? "Uploading..." : form.id ? "Update Product" : "Add Product"}
         </button>
       </form>
-
-      {/* Optionally render products and edit/delete UI here */}
     </div>
   );
 }

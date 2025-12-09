@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import ProductGrid from '../components/ProductGrid';
-import { getProducts } from '../utils/api';
-import { useCart } from '../hooks/useCart';
+import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import ProductGrid from "../components/ProductGrid";
+import { getProducts } from "../utils/api";
+import { useCart } from "../hooks/useCart";
 
 export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
@@ -18,16 +18,10 @@ export default function Home() {
       <Navbar />
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-8">The Tech Shop</h1>
-       <ProductGrid
-  products={products}
-  onAdd={(p) =>
-    addToCart({
-      ...p,
-      quantity: 1
-    })
-  }
-/>
-
+        <ProductGrid
+          products={products}
+          onAdd={(p) => addToCart({ ...p, quantity: 1 })}
+        />
       </main>
       <Footer />
     </div>

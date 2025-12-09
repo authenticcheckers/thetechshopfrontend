@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+const [imageFile, setImageFile] = useState<File | null>(null);
+const [loading, setLoading] = useState(false);
+
 interface Product {
   id: number;
   name: string;

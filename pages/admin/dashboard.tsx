@@ -68,14 +68,14 @@ export default function AdminDashboard() {
     fetchOrders();
   }, []);
 
-  // Handle file change
+  // Handle file input change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       setForm({ ...form, imageFile: e.target.files[0] });
     }
   };
 
-  // Upload image and return uploaded URL
+  // Upload image to Cloudinary via API route
   const uploadImage = async (): Promise<string> => {
     if (!form.imageFile) throw new Error("No image selected");
 
@@ -84,21 +84,24 @@ export default function AdminDashboard() {
     formData.append("image", form.imageFile);
 
     try {
-      const res = await axios.post("/api/products/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const res = await fetch("/api/products/upload", {
+        method: "POST",
+        body: formData,
       });
-      return res.data.url;
-    } catch (err) {
-      console.error("Image upload failed:", err);
-      throw err;
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData?.error || "Upload failed");
+      }
+
+      const data = await res.json();
+      return data.url;
     } finally {
       setUploading(false);
     }
   };
 
-  // Add / Edit Product
+  // Handle Add / Edit Product
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -131,6 +134,7 @@ export default function AdminDashboard() {
         });
       }
 
+      // Reset form
       setForm({
         id: null,
         name: "",
@@ -142,9 +146,9 @@ export default function AdminDashboard() {
       });
 
       fetchProducts();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Submit failed:", err);
-      alert("Product save failed");
+      alert(`Product save failed: ${err.message}`);
     }
   };
 
@@ -225,6 +229,8 @@ export default function AdminDashboard() {
             : "Add Product"}
         </button>
       </form>
+
+      {/* Optionally render products and edit/delete UI here */}
     </div>
   );
 }

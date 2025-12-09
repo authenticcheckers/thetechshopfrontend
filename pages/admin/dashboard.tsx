@@ -136,9 +136,7 @@ export default function AdminDashboard() {
     console.error(err);
   }
 };
-
-
-    });
+    );
   };
 
   // Add / Edit Product

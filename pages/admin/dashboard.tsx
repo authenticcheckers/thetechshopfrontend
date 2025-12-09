@@ -109,8 +109,34 @@ export default function AdminDashboard() {
     console.log(reader.result);
   };
 
-  reader.readAsDataURL(form.imageFile);
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!form.imageFile) {
+    console.log("No file selected");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", form.imageFile); // file
+  formData.append("name", form.name); // other fields if needed
+  formData.append("price", form.price.toString());
+
+  try {
+    const res = await fetch("/api/products/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error("Upload failed");
+
+    const result = await res.json();
+    console.log("Upload success:", result);
+  } catch (err) {
+    console.error(err);
+  }
 };
+
 
     });
   };

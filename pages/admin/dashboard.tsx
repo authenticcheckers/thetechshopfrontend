@@ -137,7 +137,7 @@ export default function AdminDashboard() {
           
           <div {...getRootProps()} className="border-2 border-dashed border-gray-500 p-4 rounded cursor-pointer text-center hover:border-blue-500 transition">
             <input {...getInputProps()} />
-            {preview ? <img src={preview} className="mx-auto h-40 object-contain" /> : <p>Drag & drop image here, or click to select</p>}
+            {preview ? <img src={preview} className="mx-auto h-40 object-contain" /> : <p>Drag & drop images here, or click to select</p>}
           </div>
 
           <div className="flex space-x-2">

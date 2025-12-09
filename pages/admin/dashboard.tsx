@@ -1,5 +1,5 @@
 // pages/admin/dashboard.tsx
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const [imageFile, setImageFile] = useState<File | null>(null);

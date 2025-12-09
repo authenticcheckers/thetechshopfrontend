@@ -1,20 +1,14 @@
-// pages/api/products/list.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Pool } from "pg";
 
-// Extend globalThis to include pool
 declare global {
   var pool: Pool | undefined;
 }
 
-// Use global pool to avoid creating multiple connections on serverless
 let pool: Pool;
 
 if (!globalThis.pool) {
-  if (!process.env.DATABASE_URL) {
-    console.error("DATABASE_URL is not set!");
-    throw new Error("Missing DATABASE_URL environment variable");
-  }
+  if (!process.env.DATABASE_URL) throw new Error("Missing DATABASE_URL");
   pool = new Pool({ connectionString: process.env.DATABASE_URL });
   globalThis.pool = pool;
 } else {
@@ -26,10 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const result = await pool.query("SELECT * FROM products ORDER BY id DESC");
     res.status(200).json({ products: result.rows });
   } catch (err: any) {
-    console.error("Database query failed:", err);
-    res.status(500).json({
-      message: "Database query failed",
-      error: err.message || "Unknown error",
-    });
+    console.error(err);
+    res.status(500).json({ message: "Database query failed", error: err.message });
   }
 }

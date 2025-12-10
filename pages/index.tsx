@@ -34,8 +34,8 @@ export default function Home() {
     addToCart({
       id: p.id,
       name: p.name,
-      price: p.price,
-      image: p.image_url, // ✅ FIX
+      price: Number(p.price), // ✅ FIX
+      image: p.image_url,
       quantity: 1,
     })
   }

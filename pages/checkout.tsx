@@ -1,25 +1,38 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { useCart } from '../hooks/useCart';
-import { createOrder } from '../utils/api';
+import { useCart } from "../hooks/useCart";
+import CartItem from "../components/CartItem";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function Checkout() {
-  const { cart } = useCart();
-  const total = cart.reduce((acc: number, item: any) => acc + item.price, 0);
+  const { cart, getTotal } = useCart();
 
-  const handleCheckout = async () => {
-    const order = await createOrder({ items: cart, total, currency: 'GHS' });
-    alert('Order created! Check your email.');
-  }
+  if (cart.length === 0)
+    return (
+      <div className="min-h-screen text-white flex flex-col items-center justify-center">
+        <h2>Your cart is empty</h2>
+      </div>
+    );
+
+  const handlePayment = async () => {
+    // Here you can integrate Stripe / Paystack / MoMo
+    alert(`Total to pay: ${getTotal()} GHS`);
+  };
 
   return (
     <div className="bg-neutral-900 min-h-screen text-white">
       <Navbar />
-      <div className="p-10">
-        <h1 className="text-3xl font-bold mb-5">Checkout</h1>
-        <p>Total: {total} GHS</p>
-        <button onClick={handleCheckout} className="mt-5 bg-primary text-black py-2 px-5 rounded-lg">Pay Now</button>
+      <div className="container mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-6">Checkout</h1>
+        {cart.map((item) => (
+          <CartItem key={item.id} item={item} />
+        ))}
+        <h2 className="text-xl font-bold mt-6">Total: {getTotal()} GHS</h2>
+        <button
+          onClick={handlePayment}
+          className="bg-blue-600 px-4 py-2 rounded mt-4 hover:bg-blue-500"
+        >
+          Pay Now
+        </button>
       </div>
       <Footer />
     </div>

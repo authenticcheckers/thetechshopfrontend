@@ -2,7 +2,7 @@ import { useCart } from "../hooks/useCart";
 import { CartItem as CartItemType } from "../types/CartItem";
 
 export default function CartItem({ item }: { item: CartItemType }) {
-  const { removeFromCart } = useCart();
+  const { removeFromCart } = useCart(); // Now works
 
   return (
     <div className="flex justify-between items-center bg-neutral-800 p-3 rounded-lg mb-2">

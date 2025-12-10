@@ -3,7 +3,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProductGrid from "../components/ProductGrid";
 import { getProducts } from "../utils/api";
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../hooks/useCart"
+import { Product } from "../types/Product";
 
 interface Product {
   id: number;
@@ -28,14 +29,14 @@ export default function Home() {
       <Navbar />
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-8">The Tech Shop</h1>
-        <ProductGrid
+       <ProductGrid
   products={products}
   onAdd={(p: Product) =>
     addToCart({
       id: p.id,
       name: p.name,
-      price: Number(p.price), // ✅ FIX
-      image: p.image_url,     // ✅ FIX
+      price: Number(p.price), // ✅ string ➜ number
+      image: p.image_url,     // ✅ map correctly
       quantity: 1,
     })
   }

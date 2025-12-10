@@ -12,8 +12,8 @@ export default function ProductGrid({ products, onAdd }: Props) {
       {products.map((p) => (
         <div
           key={p.id}
-          className="bg-gray-800 p-4 rounded-lg flex flex-col items-center cursor-pointer"
-          onClick={() => window.location.href = `/product/${p.id}`} // click navigates
+          className="bg-gray-800 p-4 rounded-lg flex flex-col items-center cursor-pointer hover:bg-gray-700 transition"
+          onClick={() => (window.location.href = `/product/${p.id}`)}
         >
           <img
             src={p.image_url}
@@ -22,11 +22,13 @@ export default function ProductGrid({ products, onAdd }: Props) {
           />
           <h2 className="mt-2 text-lg font-bold">{p.name}</h2>
           <p className="text-sm text-gray-400">{p.description}</p>
-          <p className="text-sm text-gray-400">{p.specs ?? "Specs not available"}</p>
+          <p className="text-sm text-gray-400">
+            {p.specs ?? "Specs not available"}
+          </p>
           <p className="text-white font-semibold mt-1">{p.price} GHS</p>
           <button
             onClick={(e) => {
-              e.stopPropagation(); // prevent navigation
+              e.stopPropagation();
               onAdd(p);
             }}
             className="mt-3 bg-blue-600 px-3 py-1 rounded hover:bg-blue-500"

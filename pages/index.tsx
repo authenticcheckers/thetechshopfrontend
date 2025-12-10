@@ -5,8 +5,18 @@ import ProductGrid from "../components/ProductGrid";
 import { getProducts } from "../utils/api";
 import { useCart } from "../hooks/useCart";
 
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  specs: string | null;
+  price: string;
+  stock: string | null;
+  image_url: string;
+}
+
 export default function Home() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const { addToCart } = useCart();
 
   useEffect(() => {

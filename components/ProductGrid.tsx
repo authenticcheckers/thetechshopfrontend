@@ -1,31 +1,33 @@
-import { useRouter } from "next/router";
+import React from "react";
 import { Product } from "../types/Product";
 
-export default function ProductGrid({ products, onAdd }: any) {
-  const router = useRouter();
+interface Props {
+  products: Product[];
+  onAdd: (product: Product) => void;
+}
 
+export default function ProductGrid({ products, onAdd }: Props) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {products.map((product: any) => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {products.map(p => (
         <div
-          key={product.id}
-          className="bg-gray-800 p-4 rounded cursor-pointer hover:scale-105 transition"
-          onClick={() => router.push(`/product/${product.id}`)}
+          key={p.id}
+          className="bg-gray-800 p-4 rounded-lg flex flex-col items-center"
         >
           <img
-            src={product.image_url || "/placeholder.jpg"}
-            alt={product.name}
-            className="w-full h-64 object-cover rounded mb-2"
+            src={p.image_url}
+            alt={p.name}
+            className="w-full h-48 object-cover rounded"
           />
-          <h2 className="text-xl font-bold">{product.name}</h2>
-          <p className="text-gray-300 text-sm mb-1">{product.description}</p>
-          <p className="text-gray-400 text-sm">{product.specs || "Specs not available"}</p>
-          <p className="text-green-400 font-semibold">{product.price} GHS</p>
-         <button
-  onClick={() => onAdd(product)}
-  className="bg-blue-600 text-white p-2 rounded">
-  Add to Cart
-</button>
+          <h2 className="mt-2 text-lg font-bold">{p.name}</h2>
+          <p className="text-sm text-gray-400">{p.specs}</p>
+          <p className="text-white font-semibold mt-1">{p.price} GHS</p>
+          <button
+            onClick={() => onAdd(p)}
+            className="mt-3 bg-blue-600 px-3 py-1 rounded hover:bg-blue-500"
+          >
+            Add to Cart
+          </button>
         </div>
       ))}
     </div>

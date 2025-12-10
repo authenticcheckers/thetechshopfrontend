@@ -4,6 +4,8 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { getProductById } from "../../utils/api";
 import { useCart } from "../../hooks/useCart";
+import { Product } from "../../types/Product";
+
 
 export default function ProductPage() {
   const router = useRouter();

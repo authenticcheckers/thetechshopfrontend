@@ -4,5 +4,6 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
-  specs?: string; // ✅ add specs as optional
+  specs?: string;
+  stock?: number;
 }

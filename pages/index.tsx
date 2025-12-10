@@ -25,6 +25,7 @@ export default function Home() {
     addToCart({
       id: p.id,
       name: p.name,
+      specs: p.specs || "Specs not available",
       price: Number(p.price), // ✅ string ➜ number
       image: p.image_url,     // ✅ map correctly
       quantity: 1,

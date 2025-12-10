@@ -8,6 +8,12 @@ export const useCart = () => {
   const addToCart = (item: CartItem) => {
     setCart((prev) => [...prev, item]);
   };
+  
+  // ✅ Add removeFromCart
+  const removeFromCart = (id: number) => {
+    setCart((prev) => prev.filter((item) => item.id !== id));
+  };
+  
   return { cart, addToCart };
 };
 

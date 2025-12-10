@@ -35,7 +35,7 @@ export default function Home() {
       id: p.id,
       name: p.name,
       price: Number(p.price), // ✅ FIX
-      image: p.image_url,
+      image: p.image_url,     // ✅ FIX
       quantity: 1,
     })
   }

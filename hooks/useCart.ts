@@ -6,10 +6,12 @@ export const useCart = () => {
 
   const addToCart = (item: CartItem) => {
     setCart(prev => {
-      const existing = prev.find(i => i.id === item.id);
-      if (existing) {
+      const exists = prev.find(i => i.id === item.id);
+      if (exists) {
         return prev.map(i =>
-          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
+          i.id === item.id
+            ? { ...i, quantity: i.quantity + item.quantity }
+            : i
         );
       }
       return [...prev, item];

@@ -21,12 +21,11 @@ export default function ProductGrid({ products, onAdd }: any) {
           <p className="text-gray-300 text-sm mb-1">{product.description}</p>
           <p className="text-gray-400 text-sm">{product.specs || "Specs not available"}</p>
           <p className="text-green-400 font-semibold">{product.price} GHS</p>
-          <button
-            onClick={(e) => { e.stopPropagation(); onAdd(product); }}
-            className="bg-blue-600 p-2 mt-2 rounded w-full"
-          >
-            Add to Cart
-          </button>
+         <button
+  onClick={() => onAdd(product)}
+  className="bg-blue-600 text-white p-2 rounded">
+  Add to Cart
+</button>
         </div>
       ))}
     </div>

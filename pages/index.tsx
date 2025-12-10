@@ -13,10 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     getProducts()
-      .then((data) => {
-        // Make sure data.products exists
-        if (Array.isArray(data.products)) setProducts(data.products);
-      })
+      .then((data) => setProducts(data.products))
       .catch(() => setProducts([]));
   }, []);
 
@@ -25,10 +22,10 @@ export default function Home() {
       id: p.id,
       name: p.name,
       description: p.description,
-      specs: p.specs ?? undefined, // convert null → undefined
-      price: Number(p.price),       // string → number
+      specs: p.specs ?? undefined,
+      price: Number(p.price),
       stock: p.stock ? Number(p.stock) : undefined,
-      image: p.image_url,           // map to cart
+      image: p.image_url,
       quantity: 1,
     };
     addToCart(item);

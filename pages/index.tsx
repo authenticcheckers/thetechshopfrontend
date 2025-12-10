@@ -32,8 +32,8 @@ export default function Home() {
               price: Number(p.price),
               image: p.image_url,
               quantity: 1,
-              specs: p.specs,
-              stock: p.stock,
+              specs: p.specs ?? undefined,  // ✅ convert null → undefined
+      stock: p.stock ? Number(p.stock) : undefined,
             })
           }
         />

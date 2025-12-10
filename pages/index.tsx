@@ -30,7 +30,15 @@ export default function Home() {
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-8">The Tech Shop</h1>
         <ProductGrid
   products={products}
-  onAdd={(p: Product) => addToCart({ ...p, quantity: 1 })}
+  onAdd={(p: Product) =>
+    addToCart({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      image: p.image_url, // ✅ FIX
+      quantity: 1,
+    })
+  }
 />
       </main>
       <Footer />

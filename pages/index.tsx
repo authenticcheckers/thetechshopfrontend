@@ -29,9 +29,9 @@ export default function Home() {
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-8">The Tech Shop</h1>
         <ProductGrid
-          products={products}
-          onAdd={(p) => addToCart({ ...p, quantity: 1 })}
-        />
+  products={products}
+  onAdd={(p: Product) => addToCart({ ...p, quantity: 1 })}
+/>
       </main>
       <Footer />
     </div>

@@ -33,7 +33,7 @@ export default function Home() {
               image: p.image_url,
               quantity: 1,
               specs: p.specs,
-              stock: p.stock ? Number(p.stock) : null,
+              stock: p.stock,
             })
           }
         />
